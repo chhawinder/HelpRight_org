@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Organization Sign-up</title>
+    <link rel="stylesheet" href="organization.css">
+</head>
+
+<body>
+    <h1>Organization Sign-up</h1>
+    <!-- <form action="submit-form.php" method="post"> -->
+    <div id="form2">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="pwd">Password:</label>
+        <input type="password" id="pwd" name="pwd" required><br><br>
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone" required><br><br>
+
+        <label for="year">Year of Establishment:</label>
+        <input type="number" id="yearofEst" min="1900" max="2099" step="1" value="2023" /><br><br>
+
+        <label for="volunteers">Number of volunteers joined:</label>
+        <input type="number" id="volunteers" name="volunteers" min="0" required /><br><br>
+
+        <label for="interests">Areas of Interest:</label>
+        <input type="checkbox" id="interests" value="Pet Help">Pet Help<br>
+        <input type="checkbox" id="interests" value="Education">Education<br>
+        <input type="checkbox" id="interests" value="Accidents">Accidents<br><br>
+        <!-- <input type="checkbox" id="interests" name="interests[]" value="Other">Other<br><br> -->
+
+        <label for="availability">Availability:</label>
+        <input type="radio" id="availability" value="Weekdays">Weekdays<br>
+        <input type="radio" id="availability" value="Weekends">Weekends<br><br>
+
+
+        <input type="submit" id="SignUp" value="Submit">
+        <!-- </form> -->
+    </div>
+</body>
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import {
+        initializeApp
+    } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+    import {
+        getDatabase,
+        set,
+        ref,
+        update
+    } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+    // import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-analytics.js";
+    import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut
+    } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+        apiKey: "AIzaSyDqL9a_NOVueYz_Vzh6UXMChwv9lIx7-8g",
+        authDomain: "helpright-9d98c.firebaseapp.com",
+        databaseURL: "https://helpright-9d98c-default-rtdb.firebaseio.com",
+        projectId: "helpright-9d98c",
+        storageBucket: "helpright-9d98c.appspot.com",
+        messagingSenderId: "26552912513",
+        appId: "1:26552912513:web:c3fda805a9fa65fb605b80",
+        measurementId: "G-8BLZ9R8843"
+    };
+
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    // const analytics = getAnalytics(app);
+    const database = getDatabase(app);
+    const auth = getAuth();
+    SignUp.addEventListener('click', (e) => {
+        var name = document.getElementById("name").value;
+        var email = document.getElementById("email").value;
+        var pass = document.getElementById("pwd").value;
+        var phone = document.getElementById("phone").value;
+        // var country = document.getElementById("Country").value;
+        var yearofEst = document.getElementById("yearofEst").value;
+        var interests = document.getElementById("interests").value;
+        var availability = document.getElementById("availability").value;
+        var voulnteers = document.getElementById("volunteers").value;
+        createUserWithEmailAndPassword(auth, email, pass)
+            .then((userCredential) => {
+                // Signed in
+                const user = userCredential.user;
+                set(ref(database, 'organization/' + user.uid), {
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    interests: interests,
+                    yearOfEst: yearofEst,
+                    availability: availability,
+                    volunteers: volunteers,
+                })
+                alert('user created');
+                // ...
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                alert(errorMessage);
+                // ..
+            });
+    });
+    login.addEventListener('click', (e) => {
+        var email = document.getElementById("email").value;
+        var pass = document.getElementById("pwd").value;
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed in
+                const dt = new Date();
+                const user = userCredential.user;
+                update(ref(database, 'organization/' + user.uid), {
+                    last_login: dt,
+
+                })
+                alert("user created");
+                // ...
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                alert(errorMessage);
+            });
+    })
+    const user = auth.currentUser;
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/firebase.User
+
+            // changes kro yaha jo honge login hone ke baad
+            const uid = user.uid;
+            // ...
+        } else {
+            // User is signed out
+            // ...
+        }
+    });
+    signout.addEventListener('click', (e) => {
+        signOut(auth).then(() => {
+            // Sign-out successful.
+            alert('signed out successfullt')
+        }).catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            alert(errorMessage);
+            // An error happened.
+        });
+    })
+</script>
+
+</html>
